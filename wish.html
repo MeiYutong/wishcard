@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>成长约定计划卡</title>
+<style>
+  *{box-sizing:border-box;font-family:Microsoft YaHei,sans-serif}
+  body{background:#f0f7ff;padding:20px;margin:0}
+  .container{max-width:500px;margin:0 auto;background:#fff;border-radius:16px;padding:30px;box-shadow:0 8px 24px rgba(0,80,160,0.1)}
+  .title{text-align:center;font-size:24px;color:#004c99;font-weight:bold}
+  .btn{width:100%;padding:16px;background:linear-gradient(90deg,#0066cc,#0099ff);color:white;border:none;border-radius:12px;font-size:16px;font-weight:bold;margin-top:20px}
+  #cardCanvas{display:none;margin:30px auto;border-radius:14px}
+  #download{display:none;margin:10px auto;padding:12px 24px;background:#0066cc;color:white;border-radius:10px;text-decoration:none}
+</style>
+
+<div class="container">
+  <div class="title">生成你的成长约定计划卡</div>
+  <button class="btn" onclick="generateCard()">点击生成心愿卡</button>
+</div>
+
+<canvas id="cardCanvas" width="800" height="1100"></canvas>
+<a id="download" download="成长约定计划卡.png">下载图片</a >
+
+<script>
+// 从URL读取表单数据（WPS 提交后会自动带过来）
+function getQuery(key) {
+  const p = new URLSearchParams(location.search)
+  return p.get(key) || ''
+}
+
+function generateCard() {
+  const name = getQuery('name')
+  const cls = getQuery('cls')
+  const ability = getQuery('ability')
+  const plan = getQuery('plan')
+
+  const canvas = document.getElementById('cardCanvas')
+  const ctx = canvas.getContext('2d')
+  canvas.style.display = 'block'
+
+  // 背景
+  const bg = ctx.createLinearGradient(0,0,0,1100)
+  bg.addColorStop(0, '#e6f7ff')
+  bg.addColorStop(1, '#ccebff')
+  ctx.fillStyle = bg
+  ctx.fillRect(0,0,800,1100)
+
+  // 边框
+  ctx.strokeStyle = '#0066cc'
+  ctx.lineWidth = 6
+  ctx.strokeRect(30,30,740,1040)
+  ctx.lineWidth = 2
+  ctx.strokeRect(50,50,700,1000)
+
+  // 标题
+  ctx.fillStyle = '#003366'
+  ctx.font = 'bold 46px Microsoft YaHei'
+  ctx.textAlign = 'center'
+  ctx.fillText('2026"成长约定"计划卡',400,150)
+  ctx.font = '26px'
+  ctx.fillText('信息学院｜策马扬鞭 不负韶华',400,200)
+
+  // 信息
+  ctx.textAlign = 'left'
+  ctx.font = 'bold 34px'
+  ctx.fillStyle = '#004c99'
+  ctx.fillText(`姓名：${name}`, 100, 290)
+  ctx.fillText(`班级：${cls}`, 100, 350)
+
+  // 能力
+  ctx.font = 'bold 32px'
+  ctx.fillStyle = '#003366'
+  ctx.fillText('本学期提升能力：',100,430)
+  ctx.font = '28px'
+  wrapText(ctx, ability, 100, 480, 600, 42)
+
+  // 计划
+  ctx.font = 'bold 32px'
+  ctx.fillText('本学期必完成计划：',100,700)
+  ctx.font = '28px'
+  wrapText(ctx, plan, 100, 750, 600, 42)
+
+  // 底部
+  ctx.textAlign = 'center'
+  ctx.font = 'bold 36px'
+  ctx.fillText('信息学院学期成长计划',400,990)
+  ctx.font = '28px'
+  ctx.fillText('2026马年·努力皆有回报',400,1040)
+
+  const a = document.getElementById('download')
+  a.style.display = 'inline-block'
+  a.href = canvas.toDataURL('image/png')
+}
+
+function wrapText(ctx, text, x, y, maxW, lineH) {
+  let line = ''
+  for(let i=0;i<text.length;i++){
+    const testLine = line + text[i]
+    if(ctx.measureText(testLine).width > maxW && i>0){
+      ctx.fillText(line,x,y)
+      line = text[i]
+      y += lineH
+    }else{
+      line = testLine
+    }
+  }
+  ctx.fillText(line,x,y)
+}
+</script>
+</html>
